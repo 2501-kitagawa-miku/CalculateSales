@@ -162,7 +162,7 @@ public class CalculateSales {
 			for (String key : branchNames.keySet()) {
 				bw.write(key + "," + branchNames.get(key) + "," + branchSales.get(key));
 				bw.newLine();
-				}
+			}
 
 		} catch(IOException e) {
 			System.out.println(UNKNOWN_ERROR);
