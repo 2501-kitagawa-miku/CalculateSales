@@ -41,11 +41,11 @@ public class CalculateSales {
 		}
 
 		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
-		File[] files = new File("C:\\Users\\trainee0928\\Desktop\\CalculateSales").listFiles();
+		File[] files = new File(args[0]).listFiles();
 
 		List<File> rcdFiles = new ArrayList<>();
 
-		for (int i = 0; i<files.length; i++) {
+		for (int i = 0; i < files.length; i++) {
 			if(files[i].getName().matches( "^\\d{8}+.rcd$")) {
 				rcdFiles.add(files[i]);
 			}
@@ -86,7 +86,6 @@ public class CalculateSales {
 					}
 				}
 			}
-//			return;
 		}
 
 
@@ -122,8 +121,6 @@ public class CalculateSales {
 
 				branchNames.put(items[0], items[1]);
 				branchSales.put(items[0], 0L);
-
-				System.out.println(items);
 			}
 
 		} catch(IOException e) {
@@ -162,10 +159,9 @@ public class CalculateSales {
 			FileWriter fw = new FileWriter(file);
 			bw = new BufferedWriter(fw);
 
-				for (String key : branchNames.keySet()) {
-					bw.write(key + "," +  branchNames.get(key) + "," + branchSales.get(key));
-					bw.newLine();
-
+			for (String key : branchNames.keySet()) {
+				bw.write(key + "," + branchNames.get(key) + "," + branchSales.get(key));
+				bw.newLine();
 				}
 
 		} catch(IOException e) {
