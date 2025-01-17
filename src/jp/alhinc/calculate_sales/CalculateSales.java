@@ -37,6 +37,9 @@ public class CalculateSales {
 	private static final String BRANCH_PATH_NOT_EXIST = "の支店コードが不正です";
 	private static final String COMMODITY_PATH_NOT_EXIST = "の商品コードが不正です";
 	private static final String SALES_INVALID_FORMAT = "のフォーマットが不正です";
+	
+	static String branchRegular = "^\\d{3}";
+	static String commodityRegular = "^[a-zA-Z0-9]+$";
 
 
 	/**
@@ -62,12 +65,12 @@ public class CalculateSales {
 		Map<String, Long> commoditySales = new HashMap<>();
 
 		// 支店定義ファイル読み込み処理
-		if(!readBranchFile(args[0], FILE_NAME_BRANCH_LST, branchNames, branchSales)) {
+		if(!readFile(args[0], FILE_NAME_BRANCH_LST, BRANCH_FILE_NOT_EXIST, branchRegular, BRANCH_FILE_INVALID_FORMAT, branchNames, branchSales)) {	
 			return;
 		}
 
 		// 商品定義ファイル読み込み処理
-		if(!readCommodityFile(args[0], FILE_NAME_COMMODITY_LST, commodityNames, commoditySales)) {
+		if(!readFile(args[0], FILE_NAME_COMMODITY_LST, COMMODITY_FILE_NOT_EXIST, commodityRegular, COMMODITY_FILE_INVALID_FORMAT, commodityNames, commoditySales)) {
 			return;
 		}
 
@@ -173,12 +176,12 @@ public class CalculateSales {
 
 
 		// 支店別集計ファイル書き込み処理
-		if(!writeBranchFile(args[0], FILE_NAME_BRANCH_OUT, branchNames, branchSales)) {
+		if(!writeFile(args[0], FILE_NAME_BRANCH_OUT, branchNames, branchSales)) {
 			return;
 		}
 
 		// 商品別集計ファイル書き込み処理
-		if(!writeCommodityFile(args[0], FILE_NAME_COMMODITY_OUT, commodityNames, commoditySales)) {
+		if(!writeFile(args[0], FILE_NAME_COMMODITY_OUT, commodityNames, commoditySales)) {
 			return;
 		}
 
@@ -193,7 +196,7 @@ public class CalculateSales {
 	 * @param 支店コードと売上金額を保持するMap
 	 * @return 読み込み可否
 	 */
-	private static boolean readBranchFile(String path, String fileName, Map<String, String> branchNames, Map<String, Long> branchSales) {
+	private static boolean readFile(String path, String fileName, String BRANCH_FILE_NOT_EXIST, String branchRegular, String BRANCH_FILE_INVALID_FORMAT, Map<String, String> branchNames, Map<String, Long> branchSales) {
 		BufferedReader br = null;
 
 		try {
@@ -216,67 +219,13 @@ public class CalculateSales {
 				String[] items = line.split(",");
 
 				//ファイルのフォーマットチェック（エラー処理1-2）
-				if(items.length != 2 || (!items[0].matches("^\\d{3}"))) {
+				if(items.length != 2 || (!items[0].matches(branchRegular))) {
 					System.out.println(BRANCH_FILE_INVALID_FORMAT);
 					return false;
 				}
 
 				branchNames.put(items[0], items[1]);
 				branchSales.put(items[0], 0L);
-			}
-
-		} catch(IOException e) {
-			System.out.println(UNKNOWN_ERROR);
-			return false;
-		} finally {
-			// ファイルを開いている場合
-			if(br != null) {
-				try {
-					// ファイルを閉じる
-					br.close();
-				} catch(IOException e) {
-					System.out.println(UNKNOWN_ERROR);
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * 商品定義ファイル読み込み処理
-	 *
-	 * @param フォルダパス
-	 * @param ファイル名
-	 * @param 商品コードと商品名を保持するMap
-	 * @param 商品コードと売上金額を保持するMap
-	 * @return 読み込み可否
-	 */
-	private static boolean readCommodityFile(String path, String fileName, Map<String, String> commodityNames, Map<String, Long> commoditySales) {
-		BufferedReader br = null;
-
-		try {
-			File file = new File(path, fileName);
-
-			//ファイルの存在チェック（エラー処理1-1）
-			if(!file.exists()) {
-				System.out.println(COMMODITY_FILE_NOT_EXIST);
-				return false;
-			}
-
-			FileReader fr = new FileReader(file);
-			br = new BufferedReader(fr);
-
-			String line;
-			while((line = br.readLine()) != null) {
-				String[] items = line.split(",");
-				if(items.length != 2 || (!items[0].matches("^[a-zA-Z0-9]+$"))) {
-					System.out.println(COMMODITY_FILE_INVALID_FORMAT);
-					return false;
-				}
-
-				commodityNames.put(items[0], items[1]);
-				commoditySales.put(items[0], 0L);
 			}
 
 		} catch(IOException e) {
@@ -306,7 +255,7 @@ public class CalculateSales {
 	 * @param 支店コードと売上金額を保持するMap
 	 * @return 書き込み可否
 	 */
-	private static boolean writeBranchFile(String path, String fileName, Map<String, String> branchNames, Map<String, Long> branchSales) {
+	private static boolean writeFile(String path, String fileName, Map<String, String> branchNames, Map<String, Long> branchSales) {
 		// ※ここに書き込み処理を作成してください。(処理内容3-1)
 		BufferedWriter bw = null;
 
@@ -337,46 +286,4 @@ public class CalculateSales {
 		}
 		return true;
 	}
-
-	/**
-	 * 商品別集計ファイル書き込み処理
-	 *
-	 * @param フォルダパス
-	 * @param ファイル名
-	 * @param 支店コードと支店名を保持するMap
-	 * @param 支店コードと売上金額を保持するMap
-	 * @return 書き込み可否
-	 */
-	private static boolean writeCommodityFile(String path, String fileName, Map<String, String> commodityNames, Map<String, Long> commoditySales) {
-		// ※ここに書き込み処理を作成してください。(処理内容3-1)
-		BufferedWriter bw = null;
-
-		try {
-			File file = new File(path, fileName);
-			FileWriter fw = new FileWriter(file);
-			bw = new BufferedWriter(fw);
-
-			for (String key :commodityNames.keySet()) {
-				bw.write(key + "," + commodityNames.get(key) + "," + commoditySales.get(key));
-				bw.newLine();
-			}
-
-		} catch(IOException e) {
-			System.out.println(UNKNOWN_ERROR);
-			return false;
-		} finally {
-			// ファイルを開いている場合
-			if(bw != null) {
-				try {
-					// ファイルを閉じる
-					bw.close();
-				} catch(IOException e) {
-					System.out.println(UNKNOWN_ERROR);
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
 }
