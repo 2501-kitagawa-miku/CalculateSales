@@ -190,7 +190,7 @@ public class CalculateSales {
 	 * @param 支店（商品）コードと売上金額を保持するMap
 	 * @return 読み込み可否
 	 */
-	private static boolean readFile(String path, String fileName, String kinds, String REGULAR, Map<String, String> Names, Map<String, Long> Sales) {
+	private static boolean readFile(String path, String fileName, String kinds, String regular, Map<String, String> names, Map<String, Long> sales) {
 		BufferedReader br = null;
 
 		try {
@@ -213,13 +213,13 @@ public class CalculateSales {
 				String[] items = line.split(",");
 
 				//ファイルのフォーマットチェック（エラー処理1-2）
-				if(items.length != 2 || (!items[0].matches(REGULAR))) {
+				if(items.length != 2 || (!items[0].matches(regular))) {
 					System.out.println(kinds + FILE_INVALID_FORMAT);
 					return false;
 				}
 
-				Names.put(items[0], items[1]);
-				Sales.put(items[0], 0L);
+				names.put(items[0], items[1]);
+				sales.put(items[0], 0L);
 			}
 
 		} catch(IOException e) {
@@ -249,7 +249,7 @@ public class CalculateSales {
 	 * @param 支店（商品）コードと売上金額を保持するMap
 	 * @return 書き込み可否
 	 */
-	private static boolean writeFile(String path, String fileName, Map<String, String> Names, Map<String, Long> Sales) {
+	private static boolean writeFile(String path, String fileName, Map<String, String> names, Map<String, Long> sales) {
 		// ※ここに書き込み処理を作成してください。(処理内容3-1)
 		BufferedWriter bw = null;
 
@@ -258,8 +258,8 @@ public class CalculateSales {
 			FileWriter fw = new FileWriter(file);
 			bw = new BufferedWriter(fw);
 
-			for (String key : Names.keySet()) {
-				bw.write(key + "," + Names.get(key) + "," + Sales.get(key));
+			for (String key : names.keySet()) {
+				bw.write(key + "," + names.get(key) + "," + sales.get(key));
 				bw.newLine();
 			}
 
