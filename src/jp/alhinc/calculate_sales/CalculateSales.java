@@ -38,7 +38,7 @@ public class CalculateSales {
 
 	//支店コード・商品コードの正規表現
 	private static final String BRANCH_REGULAR = "^\\d{3}";
-	private static final String COMMODITY_REGULAR = "^[a-zA-Z0-9]{8}+$";
+	private static final String COMMODITY_REGULAR = "^[a-zA-Z0-9]{8}$";
 
 
 	/**
@@ -90,7 +90,7 @@ public class CalculateSales {
 		Collections.sort(rcdFiles);
 		for(int i = 0; i < rcdFiles.size() - 1; i++) {
 			int former = Integer.parseInt(rcdFiles.get(i).getName().substring(0, 8));
-			int latter = Integer.parseInt(rcdFiles.get(i - 1).getName().substring(0, 8));
+			int latter = Integer.parseInt(rcdFiles.get(i + 1).getName().substring(0, 8));
 
 			if((latter - former) != 1) {
 				System.out.println(NOT_CONSECUTIVE_NUMBERS);
